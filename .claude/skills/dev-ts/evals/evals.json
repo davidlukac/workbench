@@ -1,0 +1,51 @@
+{
+  "skill_name": "dev-ts",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Implement the TaskLedger class in src/ledger/index.ts. It needs to hold tasks in-memory using a Map, and expose these methods: createTask(dto: CreateTaskDto): Task, claimTask(taskId: string, agentId: string): Result<Task>, completTask(taskId: string, output: TaskOutput): Result<Task>, and getPendingTasks(): Task[]. Status transitions should live in a separate src/ledger/transitions.ts as pure functions. Use the Zod schemas from src/types.ts for the Task type. This is for the AI agent workbench project.",
+      "expected_output": "A TaskLedger class in src/ledger/index.ts with correct TypeScript patterns: private Map, Result<T> return type for mutating ops, .js extensions on imports, import type for types, no enum usage, null-checked array access. A separate transitions.ts with pure transition functions.",
+      "files": [],
+      "expectations": [
+        "TaskLedger is defined as a class with a private readonly Map<string, Task> field for storage",
+        "claimTask and completeTask return Result<Task>, not Task directly and not via throw",
+        "All import statements include .js file extensions (e.g. './types.js' not './types')",
+        "Type-only imports use 'import type' syntax (e.g. import type { Task })",
+        "No TypeScript enum keyword is used — uses z.enum() or 'as const' instead",
+        "No 'as TypeName' type assertions appear in the code",
+        "Status transition logic lives in a separate transitions.ts file as pure exported functions, not as TaskLedger methods",
+        "A Vitest test file exists that tests both the happy path and at least one error case for claimTask"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Add a `workbench status` CLI command to the workbench project. It should print all tasks in the ledger grouped by status (pending, in_progress, done, etc.), with each task showing its ID, title, and assigned persona. The command should support a --watch flag that refreshes every 2 seconds. Follow the project's Commander.js patterns with a factory function and separate view file.",
+      "expected_output": "A makeStatusCommand factory in src/commands/status.ts (thin handler), a renderStatusView function in src/views/status.view.ts (all console output here), and correct wiring. No business logic in the action handler. Proper .js imports, import type usage, no enums.",
+      "files": [],
+      "expectations": [
+        "makeStatusCommand is exported as a factory function that accepts TaskLedger (or a service) as a parameter",
+        "The command's .action() handler contains no console.log or console.error calls — all output is delegated to a view",
+        "All console output lives in a separate view file (status.view.ts or similar)",
+        "The --watch flag is defined and triggers periodic refresh",
+        "The --json flag is defined for machine-readable output",
+        "All import statements include .js file extensions",
+        "TaskLedger is injected as a dependency parameter, not imported as a module-level singleton"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Implement the MCP tool handlers for claim_task and start_task in src/server/tools.ts. claim_task takes task_id and agent_id, transitions the task to claimed, and returns the updated task. start_task takes task_id and transitions claimed → in_progress. Both tools should validate their inputs with Zod schemas and handle errors gracefully so the calling agent can see and recover from them. The TaskLedger is injected.",
+      "expected_output": "registerTools function using server.registerTool() with Zod inputSchema, returning { isError: true } instead of throwing, delegating to ledger methods, no business logic in handlers. Correct .js imports, Result type handling.",
+      "files": [],
+      "expectations": [
+        "Uses server.registerTool() from McpServer high-level API (not server.setRequestHandler())",
+        "Each registered tool passes a Zod schema as the inputSchema parameter",
+        "Error cases return { isError: true, content: [{ type: 'text', text: '...' }] } — no throw statements in tool handlers",
+        "At least claim_task and start_task are registered (and ideally submit_task, fail_task, get_task too)",
+        "Tool handlers delegate all state changes to the injected TaskLedger — no direct state mutation in handlers",
+        "All import statements include .js file extensions",
+        "No 'as TypeName' type assertions appear in the code"
+      ]
+    }
+  ]
+}

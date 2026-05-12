@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.windsurf.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:npmjs.com)",
+      "WebSearch",
+      "Bash(mkdir -p /Users/Madar/dev/workbench/docs)",
+      "Bash(mv /Users/Madar/dev/workbench/CLI.md /Users/Madar/dev/workbench/docs/)",
+      "Bash(mv /Users/Madar/dev/workbench/TechStack.md /Users/Madar/dev/workbench/docs/)",
+      "Bash(mv /Users/Madar/dev/workbench/WhatAreSkills.md /Users/Madar/dev/workbench/docs/)",
+      "Bash(mv /Users/Madar/dev/workbench/Feature.md /Users/Madar/dev/workbench/docs/)",
+      "Bash(gh api *)",
+      "Bash(git init *)",
+      "Bash(git remote *)",
+      "Bash(git fetch *)",
+      "Bash(claude --version)",
+      "mcp__basic-memory__list_memory_projects",
+      "mcp__basic-memory__write_note",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:www.npmjs.com)",
+      "WebFetch(domain:ts.sdk.modelcontextprotocol.io)",
+      "mcp__basic-memory__read_note",
+      "mcp__basic-memory__edit_note",
+      "mcp__basic-memory__build_context",
+      "Bash(npm run *)",
+      "Bash(npm test *)",
+      "mcp__workbench__fetch_story",
+      "mcp__workbench__update_spec",
+      "mcp__workbench__claim_task",
+      "mcp__workbench__route_for_review",
+      "mcp__workbench__create_task",
+      "mcp__workbench__start_task",
+      "mcp__workbench__submit_task",
+      "mcp__workbench__update_story_status",
+      "mcp__basic-memory__search_notes"
+    ]
+  }
+}

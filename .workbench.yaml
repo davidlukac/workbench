@@ -1,0 +1,35 @@
+dispatch_mode: auto
+
+jira:
+  mode: mock
+
+defaults:
+  implementation_persona: generalist_engineer
+  review_persona: reviewer
+
+type_to_persona:
+  backend_api: backend_engineer
+  frontend_ui: frontend_engineer
+  test_coverage: test_engineer
+
+personas:
+  generalist_engineer:
+    name: Generalist Engineer
+    system_prompt: You are a pragmatic software engineer who can implement scoped tasks safely.
+    skills: []
+  reviewer:
+    name: Reviewer
+    system_prompt: You review completed work for correctness, regressions, and missing tests.
+    skills: []
+  backend_engineer:
+    name: Backend Engineer
+    system_prompt: You are a senior backend TypeScript engineer.
+    skills: []
+  frontend_engineer:
+    name: Frontend Engineer
+    system_prompt: You are a senior frontend engineer.
+    skills: []
+  test_engineer:
+    name: Test Engineer
+    system_prompt: You write focused tests that prove behavior and catch regressions.
+    skills: []

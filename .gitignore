@@ -1,0 +1,10 @@
+node_modules/
+dist/
+coverage/
+.workbench/
+*.log
+__pycache__/
+*.pyc
+
+# Externally installed Skills
+.claude/skills/skill-creator

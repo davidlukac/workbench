@@ -1,0 +1,167 @@
+{
+  "skill_name": "ba",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this story and get it ready to build:\n\n\"As a developer I want failed tasks to automatically retry so I don't have to babysit the workbench when a sub-agent hits an error.\"\n\nThis is for the AI Agent Workbench — an in-process MCP server that manages a task ledger. Tasks have statuses: pending, claimed, in_progress, review, done, blocked, failed. The retry should happen automatically with some backoff. Max 2 retries before requiring manual intervention.",
+      "expected_output": "Brief BA review identifying gaps, interactive gap resolution with explicit assumptions, then complete Gherkin covering: successful retry, retry exhaustion requiring manual intervention, backoff timing, and distinction between transient vs permanent failures.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "has-gherkin-feature",
+          "text": "Output contains a Gherkin Feature block (starts with 'Feature:')",
+          "check": "string_contains",
+          "value": "Feature:"
+        },
+        {
+          "id": "covers-retry-happy-path",
+          "text": "Output contains a scenario for the successful auto-retry case",
+          "check": "string_contains_any",
+          "values": ["retry", "Retry", "re-queue", "re-try"]
+        },
+        {
+          "id": "covers-retry-exhaustion",
+          "text": "Output contains a scenario for retry exhaustion requiring manual intervention",
+          "check": "string_contains_any",
+          "values": ["exhaust", "manual", "Manual", "max_attempts", "max attempts"]
+        },
+        {
+          "id": "covers-backoff",
+          "text": "Output mentions backoff timing concept",
+          "check": "string_contains_any",
+          "values": ["backoff", "back-off", "5s", "30s", "delay", "wait"]
+        },
+        {
+          "id": "has-scenario-tags",
+          "text": "Output uses Gherkin scenario tags (@ prefix)",
+          "check": "regex",
+          "pattern": "@[a-z]"
+        },
+        {
+          "id": "identifies-gaps-or-assumptions",
+          "text": "Output explicitly identifies gaps or assumptions before the Gherkin",
+          "check": "string_contains_any",
+          "values": ["gap", "Gap", "assumption", "Assumption", "open question", "Resolved", "Accepted", "Deferred"]
+        },
+        {
+          "id": "has-structured-review-section",
+          "text": "Output has a structured BA review section separate from the Gherkin",
+          "check": "regex",
+          "pattern": "(##? (BA Review|Review|Analysis|What.s solid|Gaps|Open Questions|Assumptions))"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm implementing the claim_task MCP tool for our agent orchestration system. Multiple agents can be running concurrently and they all pull from the same task ledger. Can you identify all the edge cases and write Gherkin scenarios for claim_task?\n\nHere's the tool signature:\nclaim_task(task_id: string, agent_id: string) → { success: bool, task: Task | null, error: string | null }\n\nA task can only be claimed by one agent. It must be in 'pending' status and all its dependencies must be 'done'.",
+      "expected_output": "Edge case analysis covering concurrent claims, already-claimed tasks, wrong status, unmet dependencies, invalid task IDs, idempotency. Gherkin with @concurrency, @error, @happy-path tags.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "has-gherkin-feature",
+          "text": "Output contains a Gherkin Feature block",
+          "check": "string_contains",
+          "value": "Feature:"
+        },
+        {
+          "id": "covers-happy-path-claim",
+          "text": "Output contains a happy-path scenario where a pending task is successfully claimed",
+          "check": "string_contains_any",
+          "values": ["successfully claimed", "claimed_by", "transitions to \"claimed\"", "status changes to claimed"]
+        },
+        {
+          "id": "covers-concurrent-claim",
+          "text": "Output addresses concurrent race condition: two agents claiming same task simultaneously",
+          "check": "string_contains_any",
+          "values": ["concurrent", "race", "simultaneously", "same time", "two agents", "second agent"]
+        },
+        {
+          "id": "covers-already-claimed",
+          "text": "Output covers attempting to claim an already-claimed task",
+          "check": "string_contains_any",
+          "values": ["already claimed", "already-claimed", "not in pending", "not pending", "not available"]
+        },
+        {
+          "id": "covers-unmet-dependencies",
+          "text": "Output covers claiming a task with unmet dependencies",
+          "check": "string_contains_any",
+          "values": ["dependenc", "not done", "not all done", "unmet", "incomplete dep"]
+        },
+        {
+          "id": "covers-invalid-task-id",
+          "text": "Output covers invalid or non-existent task ID",
+          "check": "string_contains_any",
+          "values": ["invalid", "not found", "does not exist", "nonexistent", "unknown task"]
+        },
+        {
+          "id": "raises-idempotency",
+          "text": "Output raises or addresses idempotency: same agent re-claiming a task it already owns",
+          "check": "string_contains_any",
+          "values": ["idempotent", "idempotency", "same agent", "already owns", "re-claim", "reclaim", "already claimed by the same"]
+        },
+        {
+          "id": "has-scenario-tags",
+          "text": "Output uses Gherkin scenario tags (@ prefix)",
+          "check": "regex",
+          "pattern": "@[a-z]"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Here's the spec for our manual dispatch mode. Please do a full BA review and write acceptance criteria:\n\n### Manual Mode (Windsurf, Cursor, any single-agent environment)\n- No Orchestrator; agents pull work themselves via MCP\n- Each agent session: connects to MCP → reads pending tasks → claims one → works → submits\n- Parallel execution via multiple independent sessions (each claims a different task)\n- User triggers each session manually; sessions do not coordinate beyond the shared ledger\n- `get_task_prompt` is the universal entry point — returns a fully self-contained prompt string (task + persona system prompt + skill invocations + relevant spec context)\n- User can also run `workbench task next` in the terminal to get the next task prompt for copy-paste into any agent\n\nThe MCP server runs on http://localhost:3333.",
+      "expected_output": "BA review noting solid parts and real gaps (empty queue, MCP unavailable, concurrent session race). Gherkin covering: normal task pickup, empty queue, MCP unavailable, two sessions racing, get_task_prompt happy path, workbench task next CLI command.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "has-gherkin-feature",
+          "text": "Output contains a Gherkin Feature block",
+          "check": "string_contains",
+          "value": "Feature:"
+        },
+        {
+          "id": "covers-empty-queue",
+          "text": "Output covers the case where there are no pending tasks",
+          "check": "string_contains_any",
+          "values": ["empty", "no pending", "no tasks", "queue is empty", "nothing to claim"]
+        },
+        {
+          "id": "covers-mcp-unavailable",
+          "text": "Output covers MCP server unavailable or connection failure",
+          "check": "string_contains_any",
+          "values": ["unavailable", "connection", "cannot connect", "not running", "offline", "unreachable", "refused"]
+        },
+        {
+          "id": "covers-concurrent-sessions",
+          "text": "Output addresses multiple sessions racing to claim the same task",
+          "check": "string_contains_any",
+          "values": ["concurrent", "race", "two sessions", "multiple sessions", "simultaneously", "same task"]
+        },
+        {
+          "id": "covers-get-task-prompt",
+          "text": "Output includes a scenario for get_task_prompt",
+          "check": "string_contains",
+          "value": "get_task_prompt"
+        },
+        {
+          "id": "covers-cli-task-next",
+          "text": "Output covers the 'workbench task next' CLI command",
+          "check": "string_contains_any",
+          "values": ["task next", "workbench task next", "task_next", "CLI"]
+        },
+        {
+          "id": "has-structured-review",
+          "text": "Output has a formal BA review section with identified gaps before the Gherkin",
+          "check": "string_contains_any",
+          "values": ["What's solid", "Gaps to resolve", "Accepted", "Deferred", "solid", "gap", "Gap", "open question"]
+        },
+        {
+          "id": "has-scenario-tags",
+          "text": "Output uses Gherkin scenario tags (@ prefix)",
+          "check": "regex",
+          "pattern": "@[a-z]"
+        }
+      ]
+    }
+  ]
+}
